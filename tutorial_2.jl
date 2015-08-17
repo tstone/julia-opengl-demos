@@ -1,7 +1,8 @@
 import GLFW
 
-const OpenGLver="1.0"
 using OpenGL
+@OpenGL.version "1.0"
+@OpenGL.load
 
 function initGL(w, h)
     aspect_ratio = h / w
@@ -57,17 +58,18 @@ function main()
     width = 800
     height = 600
     GLFW.Init()
-    #GLFW.OpenWindowHint(GLFW.FSAA_SAMPLES, 4) # 4x antialiasing
-    GLFW.OpenWindow(width, height, 0, 0, 0, 0, 0, 0, GLFW.WINDOW)
-    GLFW.SetWindowTitle("Tutorial 2")
-    GLFW.Enable(GLFW.STICKY_KEYS);
+
+    window = GLFW.CreateWindow(width, height, "Tutorial 2")
+    GLFW.MakeContextCurrent(window)
+    GLFW.SetInputMode(window, GLFW.STICKY_KEYS, 1)
     initGL(width, height)
 
-    while GLFW.GetWindowParam(GLFW.OPENED) && !GLFW.GetKey(GLFW.KEY_ESC)
+    while !GLFW.WindowShouldClose(window) && !GLFW.GetKey(window, GLFW.KEY_ESCAPE)
         draw()
-        GLFW.SwapBuffers()
+        GLFW.SwapBuffers(window)
+	      GLFW.PollEvents()
     end
-    GLFW.CloseWindow()
+
     GLFW.Terminate()
 end
 

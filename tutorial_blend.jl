@@ -1,7 +1,7 @@
-import GLFW
-
-const OpenGLver="1.0"
+using GLFW
 using OpenGL
+@OpenGL.version "1.0"
+@OpenGL.load
 
 immutable WorldState
     x_rot::GLfloat
@@ -14,13 +14,13 @@ immutable WorldState
 end
 
 
-function tick(state::WorldState)
+function tick(window::GLFW.Window, state::WorldState)
     x_speed = state.x_speed
-    x_speed += GLFW.GetKey(GLFW.KEY_UP) ? 0.04 : 0.0
-    x_speed -= GLFW.GetKey(GLFW.KEY_DOWN) ? 0.04 : 0.0
+    x_speed += GLFW.GetKey(window, GLFW.KEY_UP) ? 0.04 : 0.0
+    x_speed -= GLFW.GetKey(window, GLFW.KEY_DOWN) ? 0.04 : 0.0
     y_speed = state.y_speed
-    y_speed += GLFW.GetKey(GLFW.KEY_RIGHT) ? 0.04 : 0.0
-    y_speed -= GLFW.GetKey(GLFW.KEY_LEFT) ? 0.04 : 0.0
+    y_speed += GLFW.GetKey(window, GLFW.KEY_RIGHT) ? 0.04 : 0.0
+    y_speed -= GLFW.GetKey(window, GLFW.KEY_LEFT) ? 0.04 : 0.0
     x_rot = state.x_rot + x_speed
     y_rot = state.y_rot + y_speed
     return WorldState(x_rot, x_speed,
@@ -117,20 +117,21 @@ function main()
     height = 600
     GLFW.Init()
     # this time we'll set up anti-aliasing to smooth the edges
-    GLFW.OpenWindowHint(GLFW.FSAA_SAMPLES, 4)
-    GLFW.OpenWindow(width, height, 0, 0, 0, 8, 24, 8, GLFW.WINDOW)
-    GLFW.SetWindowTitle("Tutorial 4")
-    GLFW.Enable(GLFW.STICKY_KEYS);
+    GLFW.WindowHint(GLFW.SAMPLES, 4)
+    window = GLFW.CreateWindow(width, height, "Tutorial Blend")
+    GLFW.MakeContextCurrent(window)
+    GLFW.SetInputMode(window, GLFW.STICKY_KEYS, 1)
     initGL(width, height)
 
     state = WorldState()
 
-    while GLFW.GetWindowParam(GLFW.OPENED) && !GLFW.GetKey(GLFW.KEY_ESC)
+    while !GLFW.WindowShouldClose(window) && !GLFW.GetKey(window, GLFW.KEY_ESCAPE)
         draw(state)
-        GLFW.SwapBuffers()
-        state = tick(state)
+        GLFW.SwapBuffers(window)
+	      GLFW.PollEvents()
+        state = tick(window, state)
     end
-    GLFW.CloseWindow()
+
     GLFW.Terminate()
 end
 

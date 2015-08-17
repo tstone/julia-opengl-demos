@@ -7,15 +7,17 @@ function main()
     width = 800
     height = 600
     GLFW.Init()
-    GLFW.OpenWindow(width, height, 0, 0, 0, 0, 0, 0, GLFW.WINDOW)
-    GLFW.SetWindowTitle("Tutorial 1")
-    GLFW.Enable(GLFW.STICKY_KEYS);
 
-    while GLFW.GetWindowParam(GLFW.OPENED) && !GLFW.GetKey(GLFW.KEY_ESC)
+    window = GLFW.CreateWindow(width, height, "Tutorial 1")
+    GLFW.MakeContextCurrent(window)
+    GLFW.SetInputMode(window, GLFW.STICKY_KEYS, 1)
+
+    while !GLFW.WindowShouldClose(window) && !GLFW.GetKey(window, GLFW.KEY_ESCAPE)
         # nothing to draw here
-        GLFW.SwapBuffers()
+        GLFW.SwapBuffers(window)
+	      GLFW.PollEvents()
     end
-    GLFW.CloseWindow()
+
     GLFW.Terminate()
 end
 

@@ -1,7 +1,8 @@
 import GLFW
 
-const OpenGLver="1.0"
 using OpenGL
+@OpenGL.version "1.0"
+@OpenGL.load
 
 immutable WorldState
     r_tri::GLfloat
@@ -72,25 +73,26 @@ function draw(state)
     glLoadIdentity()
 end
 
+
 function main()
     width = 800
     height = 600
     GLFW.Init()
     # this time we'll set up anti-aliasing to smooth the edges
-    GLFW.OpenWindowHint(GLFW.FSAA_SAMPLES, 4)
-    GLFW.OpenWindow(width, height, 0, 0, 0, 0, 0, 0, GLFW.WINDOW)
-    GLFW.SetWindowTitle("Tutorial 4")
-    GLFW.Enable(GLFW.STICKY_KEYS);
+    GLFW.WindowHint(GLFW.SAMPLES, 4)
+    window = GLFW.CreateWindow(width, height, "Tutorial 4")
+    GLFW.MakeContextCurrent(window)
     initGL(width, height)
 
     state = WorldState()
 
-    while GLFW.GetWindowParam(GLFW.OPENED) && !GLFW.GetKey(GLFW.KEY_ESC)
+    while !GLFW.WindowShouldClose(window) && !GLFW.GetKey(window, GLFW.KEY_ESCAPE)
         draw(state)
-        GLFW.SwapBuffers()
+        GLFW.SwapBuffers(window)
+	      GLFW.PollEvents()
         state = tick(state)
     end
-    GLFW.CloseWindow()
+
     GLFW.Terminate()
 end
 
